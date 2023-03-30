@@ -1,10 +1,5 @@
 import NHLDatabaseManager from '../db/dbManager';
 
-export interface ColumnValueMap {
-    column: string;
-    value: string;
-}
-
 // TODO: implement notimplementederror if tableName isn't there
 export class Model {
     database: any;
@@ -14,19 +9,22 @@ export class Model {
         this.database = new NHLDatabaseManager()
     }
 
-    async update(id: number, changes: any) {
+    update(id: number, changes) {
         const columnValues = []
-        for (const [column, value] of changes.items()) {
-            columnValues.push(`${column} = ${value}`);
+        for (const column in changes) {
+            columnValues.push(`${column} = ${changes[column]}`);
         }
-        await this.database.voidQuery(`UPDATE ${this.tableName} 
+        this.database.query(`UPDATE ${this.tableName} 
             SET ${columnValues.join(',')}
             WHERE id = ${id}
         `)
+        .then(() => {
+            this.database.close();
+        });
     }
 
-    async getById(id: number) {
-        return await this.database.get(`SELECT * FROM ${this.tableName} WHERE id = ${id}`)
+    getById(id: number) {
+        return this.database.query(`SELECT * FROM ${this.tableName} WHERE id = ${id}`)
     }
     
 }

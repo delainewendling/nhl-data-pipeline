@@ -1,38 +1,34 @@
 import mysql from 'mysql';
 
 export default class NHLDatabaseManager {
-    pool: any;
+    connection: any;
 
     constructor() {
-        this.pool = mysql.createPool({
+        this.connection = mysql.createConnection({
             host: 'nhl-data.crozanspo6zd.us-east-1.rds.amazonaws.com',
             user: process.env.NHL_DATABASE_USER,
             password: process.env.NHL_DATABASE_PASSWORD,
             database: 'nhlData',
-            connectionLimit: 100,
         })
     }
 
-    // Execute any queries that do not return anything
-    async voidQuery(query: string) {
-        await this.pool.query(query, (error) => {
-            if (error) throw error;
-            console.log('Query Executed Successfully');
-        });
+    query( sql: string ) {
+        return new Promise( ( resolve, reject ) => {
+            this.connection.query( sql, ( err, rows ) => {
+                if ( err )
+                    return reject( err );
+                resolve( rows );
+            } );
+        } );
     }
 
-    async get(query: string) {
-        await this.pool.query(query, (error, results) => {
-            if (error) throw error;
-            console.log('Query Executed Successfully');
-            return results;
-        });
-    }
-
-    closeConnection() {
-        this.pool.end((err) => {
-            if (err) throw err;
-        });
+    close() {
+        return new Promise( ( resolve, reject ) => {
+            this.connection.end( err => {
+                if ( err )
+                    return reject( err );
+            } );
+        } );
     }
 }
 

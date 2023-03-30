@@ -7,15 +7,18 @@ export class Team extends Model {
         super()
     }
 
-    async add(
+    add(
         id: number,
         name: string,
     ) {
-        await this.database.voidQuery(`INSERT INTO ${this.tableName} (
+        this.database.query(`INSERT INTO ${this.tableName} (
             id, name
         )
         VALUES (
             ${id}, ${name}
         )`)
+        .then(() => {
+            this.database.close();
+        });
     }
 }

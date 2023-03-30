@@ -1,4 +1,3 @@
-import mysql from 'mysql';
 import NHLDatabaseManager from './dbManager.js';
 
 const createPlayerTable = `CREATE TABLE Player (
@@ -45,19 +44,9 @@ const createPlayerGameStatsTable = `CREATE TABLE PlayerGameStats (
 
 const dbManager = new NHLDatabaseManager();
 
-// process.env.NHL_DATABASE_USER
-// process.env.NHL_DATABASE_PASSWORD
+dbManager.query(createPlayerTable);
+dbManager.query(createTeamTable);
+dbManager.query(createGameTable);
+dbManager.query(createPlayerGameStatsTable);
 
-// dbManager.voidQuery(createPlayerTable);
-// dbManager.voidQuery(createTeamTable);
-// dbManager.voidQuery(createGameTable);
-// dbManager.voidQuery(createPlayerGameStatsTable);
-
-// dbManager.voidQuery(`INSERT INTO Player (id, name, age) VALUES (3, 'Hardy Pardy', 26)`);
-// dbManager.voidQuery(`INSERT INTO Player (id, name, age) VALUES (4, 'Dee Dee Pickles', 29)`);
-
-const results = await dbManager.get(`SELECT * FROM Player WHERE id = 18`)
-console.log(results);
-// dbManager.closeConnection()
-// TODO: delete GAME table and TeamGameStats Table
-// TODO: delete entries in GAME and TEAM tables
+dbManager.close();

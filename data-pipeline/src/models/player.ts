@@ -7,17 +7,20 @@ export class Player extends Model{
         super()
     }
 
-    async add(
+    add(
         id: number,
         name: string,
         age?: number,
     ) {
-        await this.database.voidQuery(`INSERT INTO ${this.tableName} (
+        this.database.query(`INSERT INTO ${this.tableName} (
             id, name, age
         )
         VALUES (
             ${id}, ${name}, ${age}
         )`)
+        .then(() => {
+            this.database.close();
+        });
     }
 }
 
@@ -28,7 +31,7 @@ export class PlayerGameStats extends Model {
         super()
     }
 
-   async add(
+   add(
         playerId: number,
         teamId: number,
         gameId: number,
@@ -39,11 +42,14 @@ export class PlayerGameStats extends Model {
         hits = 0,
         penaltyMinutes = 0,
     ) {
-        await this.database.voidQuery(`INSERT INTO ${this.tableName} (
+        this.database.query(`INSERT INTO ${this.tableName} (
             player_id, team_id, game_id, position, number, assists, goals, hits, penalty_minutes
         )
         VALUES (
             ${playerId}, ${teamId}, ${gameId}, ${position}, ${number}, ${assists}, ${goals}, ${hits}, ${penaltyMinutes}
         )`)
+        .then(() => {
+            this.database.close();
+        });
     }
 }
