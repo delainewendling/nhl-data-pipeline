@@ -1,6 +1,6 @@
 # nhl-data-pipeline
 
-This is partially complete code for the [sportradar-advanced-challenge](https://github.com/sportradarus/sportradar-advanced-challenge/tree/main). Because it is partially complete, it does not run :(
+This is partially complete code for the [sportradar-advanced-challenge](https://github.com/sportradarus/sportradar-advanced-challenge/tree/main). Because it is partially complete, it does not run :( That said, this was an interesting challenge and I enjoyed trying to grok it.
 
 ## Running unit tests
 
