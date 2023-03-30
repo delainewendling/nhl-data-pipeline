@@ -14,7 +14,7 @@ I set up a free tier MySQL database instance in a personal AWS account to hold t
 
 Normally I would utilize terraform to create any infrastructure in AWS. However, since I was limited to the free tier and wanted to move quickly, I decided not to set up terraform for this project. The ERD diagram for this database can be found [here](https://lucid.app/lucidchart/8f885212-2855-4e46-b622-e4f3daf8d0dc/edit?viewport_loc=-53%2C-52%2C2385%2C1536%2C.hCJmpJP21mM&invitationId=inv_7f1ef2f4-4e31-4c6f-961c-dbfbe40fae90) or in the image below.
 
-![](assets/nhl_database_erd.png)
+![](data-pipeline/assets/nhl_database_erd.png)
 
 *Assumptions*
 
