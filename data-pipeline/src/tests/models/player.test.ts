@@ -40,7 +40,7 @@ describe("PlayerGameStats", () => {
 
     test("calls getById with correct query", () => {
         const playerGameStats = new PlayerGameStats();
-        const mockQuery = jest.fn();
+        const mockQuery = jest.fn(() => Promise.resolve());
         const mockDb = {
             query: mockQuery
         }
@@ -54,9 +54,10 @@ describe("PlayerGameStats", () => {
 
     test("calls update with correct query", () => {
         const playerGameStats = new PlayerGameStats();
-        const mockQuery = jest.fn();
+        const mockQuery = jest.fn(() => Promise.resolve());
         const mockDb = {
-            query: mockQuery
+            query: mockQuery,
+            close: jest.fn(() => Promise.resolve())
         }
         playerGameStats.database = mockDb;
         const playerGameStatsId = 23;

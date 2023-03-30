@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {Game, Team, Player, PlayerGameStats} from '../models';
 import { Listener } from './listenForChanges';
 
@@ -20,8 +19,10 @@ export class GameDataProcessor {
     }
 
     uploadGameData (game) {
-        this.createTeamIfDoesNotExist(game.teams.away.team);
-        this.createTeamIfDoesNotExist(game.teams.home.team);
+        const gameData = game.gameData;
+
+        this.createTeamIfDoesNotExist(gameData.teams.away.team);
+        this.createTeamIfDoesNotExist(gameData.teams.home.team);
 
         try {
             this.createNewGameIfDoesNotExist(game);
@@ -42,8 +43,6 @@ export class GameDataProcessor {
         this.teamDb.getById(id)
         .then((team) => {
             if (!team) {
-                console.log("I got this this part of the team test")
-                console.log("what is this? ", this.teamDb.add)
                 this.teamDb.add(id, name)
             }
         });
@@ -70,43 +69,36 @@ export class GameDataProcessor {
     }
 
     updateGameData (liveGameData) {
+        // From what I can tell, the endDateTime doesn't get added to the data until the game is over
+        // Therefore, signal the process to stop when that data exists
         if ('endDateTime' in liveGameData.datetime) {
             this.endTime = liveGameData.datetime.endDateTime
             this.gameDb.update(this.gameId, {'end_date_time': this.endTime})
         }
         const gameId = liveGameData.gamePk;
-        const awayTeam = liveGameData.boxscore.teams.away;
-        const awayTeamId = awayTeam.team.id;
-        const homeTeam = liveGameData.boxscore.teams.home;
-        const homeTeamId = homeTeam.team.id;
-        const players = Object.assign({}, {...awayTeam.players, teamId: awayTeamId}, {...homeTeam.players, teamId: homeTeamId})
+        const awayTeamPlayers = liveGameData.boxscore.teams.away.players;
+        const homeTeamPlayers = liveGameData.boxscore.teams.home.players;
+        const players = Object.assign({}, awayTeamPlayers, homeTeamPlayers)
         for (const player of players.values()) {
-            this.createPlayerIfDoesNotExist(player.person);
-            this.createOrUpdatePlayerGameStats(gameId, player);
+            const fullPlayerData = liveGameData.gameData.players[`ID${player.id}`]
+            const playerAge = fullPlayerData.currentAge;
+            const teamId = fullPlayerData.currentTeam.id;
+            this.createPlayerIfDoesNotExist(playerAge, player.person);
+            this.createOrUpdatePlayerGameStats(gameId, teamId, player);
         }
-
     }
 
-    createPlayerIfDoesNotExist ({id, fullName, link}) {
+    createPlayerIfDoesNotExist (age: number, {id, fullName}) {
         this.playerDb.getById(id)
         .then((player) => {
             if (!player) {
-                axios.get(link)
-                .then(async (res) => {
-                    const age = res.data.people[0].currentAge;
-                    this.playerDb.add(id, fullName, age)
-                })
-                .catch(async (err) => {
-                    console.error(`There was an error getting the player's age ${err}`)
-                    this.playerDb.add(id, fullName, null)
-                })
+                this.playerDb.add(id, fullName, age)
             }
         })
     }
 
-    async createOrUpdatePlayerGameStats (gameId: number, player) {
+    createOrUpdatePlayerGameStats (gameId: number, teamId: number, player) {
         const id = player.person.id;
-        const teamId = player.teamId;
         const position = player.position.name;
         const jerseyNumber = player.jerseyNumber;
         const stats = player.stats.skaterStats

@@ -13,7 +13,7 @@ describe("Team", () => {
 
   test("calls getById with correct query", () => {
     const team = new Team();
-    const mockQuery = jest.fn();
+    const mockQuery = jest.fn(() => Promise.resolve());
     const mockDb = {
         query: mockQuery
     }

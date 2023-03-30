@@ -14,10 +14,7 @@ export class Model {
         for (const column in changes) {
             columnValues.push(`${column} = ${changes[column]}`);
         }
-        this.database.query(`UPDATE ${this.tableName} 
-            SET ${columnValues.join(',')}
-            WHERE id = ${id}
-        `)
+        this.database.query(`UPDATE ${this.tableName} SET ${columnValues.join(', ')} WHERE id = ${id}`)
         .then(() => {
             this.database.close();
         });
